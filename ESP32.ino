@@ -6,20 +6,11 @@
 #include <TimeLib.h>
 
 //Change WIFI and Password before compiling
-//#define WIFI_SSID "Anh Lan"
-//#define WIFI_PASSWORD "0348350899"
+#define WIFI_SSID *****************
+#define WIFI_PASSWORD *********
 
-#define WIFI_SSID "NounsiDev Network"
-#define WIFI_PASSWORD "noun0308"
-
-
-//#define FIREBASE_HOST "htps://smartlight-529a6-default-rtdb.firebaseio.com/"
-#define FIREBASE_HOST "https://smartlight-a512f-default-rtdb.firebaseio.com/"
-//"https://esp32-test-486b7-default-rtdb.firebaseio.com/"
-//#define FIREBASE_AUTH "TQB6PIhaqySmgNTRTDcbvNmlzsaHmCcrfvcWTVkC"
-#define FIREBASE_AUTH "9jeu6XMl9u3ZYJBFQDhFzsac8DdIQYtVmCHWhJpn"
-
-//"k8VKBQwPQKp4iNzhm1XggTu7MHvhuduwUxuwLsj2"
+#define FIREBASE_HOST ********************
+#define FIREBASE_AUTH ********************
 
 //De
 #define ss 5
