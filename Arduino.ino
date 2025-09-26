@@ -28,30 +28,29 @@ bool isSensorOn = false;
 String Slux;  
 BH1750 lightMeter;
 
-const unsigned long LED_ON_THRESHOLD = 400.0;  // Bật đèn nếu ánh sáng dưới 100 lux
-const unsigned long LED_OFF_THRESHOLD = 1000.0; // tắt đèn nếu ánh sáng trên 200 lux
+//Light sensor lux threshold
+const unsigned long LED_ON_THRESHOLD = 400.0;  
+const unsigned long LED_OFF_THRESHOLD = 1000.0; 
 
 // Biến cho Moving Average Filter
 const int WINDOW_SIZE = 10;
 float luxReadings[WINDOW_SIZE];
 int readingIndex = 0;
 
+//Sensor Data
 unsigned long sensorDelayTimer = 0;
 int sensorDelayTime = 10000;
-
-// Biến để quản lý non-blocking delay cho việc đọc cảm biến
 unsigned long previousMillis = 0;
-const long interval = 10; // Đọc cảm biến mỗi 0.6 giây
-
-// Biến lưu giá trị lux trung bình, có thể truy cập từ mọi nơi
+const long interval = 10;
 unsigned long averageLux = 0;
-bool isProcessingDone = false; // Biến cờ để báo hiệu một chu kỳ đã hoàn thành
+bool isProcessingDone = false; 
 
-double r1 = 1000;
+//Battery Data
+double r1 = 1000; //Enter your hardware resistor value
 double r2 = 1000;
-double vcc = 8.21;
-float batteryPercentage = 0.018;
-float minBattery = 6.6;
+double vcc = 8.21; //Enter max battery capacity
+float minBattery = 6.6; //Enter min battery capacity
+float batteryPercentage = 0.018; //Pre caculated voltage for 1% battery level
 #define batteryPin A0
 int batteryLevel = 50;
 int batteryReadCount = 10;
@@ -62,15 +61,15 @@ void setup()
   Serial.begin(9600);
   pinMode(LED, OUTPUT);
   digitalWrite(LED, isLedOn ? HIGH : LOW);
-  Wire.begin();       // Khởi tạo giao tiếp I2C
+  Wire.begin();    
   
   if (lightMeter.begin()) 
   {
-    Serial.println("Cảm biến BH1750 đã sẵn sàng.");
+    Serial.println("Light sensor BH1750 is ready ");
   } 
   else 
   {
-    Serial.println("Lỗi khởi động cảm biến BH1750!");
+    Serial.println("Light sensor error");
   }
   while (!Serial);
   ResetLora();
@@ -97,11 +96,6 @@ void ProcessingLedData()
   digitalWrite(LED, isLedOn ? HIGH : LOW);
 }
 
-//Code này dùng để tách khi gửi có nhiều dữ liệu cần tách thành chuỗi, Đối với ESP32 nhận bool isLedOn thì không cần
-//Đối với Arduino nhận 2 bool isSensorOn, isLedOn thì cần tách một string thành những substring
-//Data sẽ là string dữ liệu (parameter: String data) cách nhau bởi dấu " , "
-//Hàm sẽ tìm index đầu cuối của string dữ liệu với vị trí xếp trong chuỗi cho trước (paramater: int index)
-//Sau đó sẽ dùng hàm substring để lấy string dữ liệu cần dùng ra
 String GetValue(String data, int index) 
 {
   int found = 0;
@@ -122,7 +116,6 @@ String GetValue(String data, int index)
 
 
 //******************************LORA HANDLER*****************************
-//Cú pháp gửi dữ liệu /Địa chỉ nhận/Địa chỉ gửi/Data/
 void SendLora(String Outgoing, byte Destination) {
   LoRa.beginPacket();             //--> start packet
   LoRa.write(Destination);        //--> add destination address
@@ -217,8 +210,7 @@ void LoraMessage()
 }
 
 
-//Lora hoạt động thời gian dài có lúc bị đơ
-//Workaround -> Reset lora theo định kỳ
+//Lora freezes after a while => Reset Lora
 void LoraResetHandler()
 {
   unsigned long currentMillisRestartLORA = millis();  
@@ -250,7 +242,6 @@ void ResetLora()
 void ReadLightLevel()
 {
   unsigned long currentMillis, currentLux, sum;
-  // Chỉ thực hiện khi một chu kỳ xử lý mới chưa bắt đầu
   if (!isProcessingDone) 
   {
     currentMillis = millis();
@@ -271,17 +262,17 @@ void ReadLightLevel()
 
       if (readingIndex >= WINDOW_SIZE) 
       {
-        isProcessingDone = true; // Báo hiệu đã đủ dữ liệu
-            
-        // Tính giá trị trung bình sau khi mảng đã đầy
+        isProcessingDone = true;
         sum = 0;
+
+        //Calculate average lux 
         for (int i = 0; i < WINDOW_SIZE; i++) 
         {
           sum += luxReadings[i];
         }
         averageLux = sum / WINDOW_SIZE;
         controlLed(averageLux);
-        Serial.print("Giá trị Lux trung bình ");
+        Serial.print("Average Lux ");
         Serial.println(averageLux);
       }
     }
@@ -293,7 +284,7 @@ void ReadLightLevel()
     sensorDelayTimer = millis();
     isProcessingDone = false;
     readingIndex = 0;
-    Serial.println("\n--- Bắt đầu chu kỳ thu thập dữ liệu mới ---\n");
+    Serial.println("\n--- New sensor reading process ---\n");
   }
 }
 
