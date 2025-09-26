@@ -187,7 +187,7 @@ void ReadData(int id)
       //Test
       Serial.println("                                                                  ************");
       Serial.print("                                                            ");
-      Serial.println("Trang thái đèn" + String(id) + ": " + String(lastLedState[id]));
+      Serial.println("Led Control " + String(id) + ": " + String(lastLedState[id]));
     }
   }
 
@@ -204,7 +204,7 @@ void ReadData(int id)
       lastLightSensorState[id] = isLightSensorOn[id];
       Serial.println("                                                                  ************");
       Serial.print("                                              ");
-      Serial.println("Trang thai cam bien anh sang" + String(id) + ": " + String(isLightSensorOn[id]));
+      Serial.println("Light Sensor Control " + String(id) + ": " + String(isLightSensorOn[id]));
     }
   }
 }
@@ -231,7 +231,6 @@ void ReadData(int id)
 
 
   //******************************LORA HANDLER********************************
-  //Cú pháp gửi dữ liệu /Địa chỉ nhận/Địa chỉ gửi/Data/
   void SendLora(int id, String Outgoing) {
     //Serial.println("Send LORA");
     LoRa.beginPacket();             //--> start packet
@@ -308,7 +307,7 @@ void ReadData(int id)
     }
     else 
     {
-      Serial.println("Dia chi khong hop le");
+      Serial.println("Wrong LoRa Address");
       return;
     }
    
@@ -339,11 +338,6 @@ void ReadData(int id)
     WriteFirebaseData(loraIndex, isLedData, isBatteryData);
   }
 
-  //Code này dùng để tách khi gửi có nhiều dữ liệu cần tách thành chuỗi, Đối với ESP32 nhận bool isLedOn thì không cần
-  //Đối với Arduino nhận 2 bool isSensorOn, isLedOn thì cần tách một string thành những substring
-  //Data sẽ là string dữ liệu (parameter: String data) cách nhau bởi dấu " , "
-  //Hàm sẽ tìm index đầu cuối của string dữ liệu với vị trí xếp trong chuỗi cho trước (paramater: int index)
-  //Sau đó sẽ dùng hàm substring để lấy string dữ liệu cần dùng ra
   String GetValue(String data, int index) {
     int found = 0;
     int strIndex[] = { 0, -1 };
@@ -359,8 +353,7 @@ void ReadData(int id)
     return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
   }
 
-  //Lora hoạt động thời gian dài có lúc bị đơ
-  //Workaround -> Reset lora theo định kỳ
+  //LoRa module sometime freezes after a while => Reset LoRa 
   void LoraResetHandler() {
     unsigned long currentMillisRestartLORA = millis();
     if (currentMillisRestartLORA - previousMillisRestartLORA >= intervalRestartLORA) {
