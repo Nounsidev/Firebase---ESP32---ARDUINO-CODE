@@ -5,9 +5,9 @@ Devices use: Arduino Uno R3, ESP32 cp102, LoRa Ra02
 
 Features: 
 + Read, write data - firebase; 
-+Communicate multiple slave devices (Arduino) by a master device (ESP32) using LoRa;
-+Control led and light sensor
-+Read battery level using resistor (not the optimal way due to energy wasted on resistor and battery voltage drop follows non-linear curve)
++ Communicate multiple slave devices (Arduino) by a master device (ESP32) using LoRa;
++ Control led and light sensor
++ Read battery level using resistor (not the optimal way due to energy wasted on resistor and battery voltage drop follows non-linear curve)
 
 Include in this repo: Hardware connection, Arduino Code, ESP32 Code
 Not include in this repo: External control website or app code
